@@ -1,44 +1,96 @@
 <template>
   <div id="app">
-    <h1>Vue / Typescript</h1>
-    <p>{{greetText}}</p>
-    <p>{{count}}</p>
-    <p v-if="isRegular">thanks</p>
-    <MyButton  :greet="greetText" @click="clickEmit"></MyButton>
-    <ResetButton initialValue="hello" v-model="greetText"></ResetButton>
+    <h1>Vue / Typescript Todo</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>コメント</th>
+          <th>状態</th>
+          <th>-</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(todo,index) in todos" :key="index">
+          <th>{{todo.id}}</th>
+          <td>{{todo.title}}</td>
+          <td>
+            <button @click="changeStatus(index)">
+              {{todo.status? "完了":"作業中"}}
+            </button>
+          </td>
+          <td>
+            <button @click="deleteTodo(index)">
+              削除
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>新しい作業の追加</h2>
+      <input type="text" v-model="inputText">
+      <button @click="addTodo">追加</button>
+      <p>{{errorMsg}}</p>
+      <Form @addtask="mozi = $event"></Form>
+      {{mozi}}
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue ,Watch} from 'vue-property-decorator';
-import MyButton from "./components/MyButton.vue"
-import ResetButton from "./components/ResetButton.vue"
+import { Component, Vue ,Watch, Prop} from 'vue-property-decorator';
+import Form from './components/Form.vue'
+import {TodoItem} from './todo'
+
 
 @Component({
   components: {
-    MyButton,
-    ResetButton
+    Form
   },
 })
 export default class App extends Vue {
-  private count: number = 0
-    public greetText:string = "こんにちは"
-    private isRegular: boolean = false
+  inputText: string = ""
+  errorMsg :string = ""
+  todos :TodoItem[]= []
+  nextId:number= 0
+  status:boolean = false
+  Todostatus:string = ""
+  mozi:string = ""
+  private addTodo(){
+    const task = this.inputText
+    if(task === ""){
+      alert("入力してください")
+    }else if(this.errorMsg !==""){
+     alert("10文字以内で入力してください")
+    }else{
+        this.todos.push({
+        id:this.nextId += 1,
+        title: task,
+        status: false
+      })
+      this.inputText = ""
+    }
+  }
+  
+  private deleteTodo(index){
+    this.todos.splice(index,1)
+  }
 
-  public clickEmit(count: number){
-    console.log("app click")
-    this.count = count
-    if(this.count > 5){
-      this.isRegular= true
-    }
-    this.greetText = "haaiiiiiiiiiiiiiiiii"
+  private changeStatus(index){
+    this.todos[index].status = !this.todos[index].status
   }
-  @Watch("count")
-  public countChange(){
-    if(this.count === 5){
-      alert("zyourenn")
-    }
-  }
+
+  @Watch("inputText")
+   public num(){
+     if(this.inputText.length > 10){
+       this.errorMsg = "10文字以内で入力してください"
+     }else{
+       this.errorMsg = ""
+     }
+   }
+
+
+
 }
 </script>
 
