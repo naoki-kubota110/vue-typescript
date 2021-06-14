@@ -1,21 +1,45 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-    <h1>hello</h1>
+    <h1>Vue / Typescript</h1>
+    <p>{{greetText}}</p>
+    <p>{{count}}</p>
+    <p v-if="isRegular">thanks</p>
+    <MyButton  :greet="greetText" @click="clickEmit"></MyButton>
+    <ResetButton initialValue="hello" v-model="greetText"></ResetButton>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
+import { Component, Vue ,Watch} from 'vue-property-decorator';
+import MyButton from "./components/MyButton.vue"
+import ResetButton from "./components/ResetButton.vue"
 
 @Component({
   components: {
-    HelloWorld,
+    MyButton,
+    ResetButton
   },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  private count: number = 0
+    public greetText:string = "こんにちは"
+    private isRegular: boolean = false
+
+  public clickEmit(count: number){
+    console.log("app click")
+    this.count = count
+    if(this.count > 5){
+      this.isRegular= true
+    }
+    this.greetText = "haaiiiiiiiiiiiiiiiii"
+  }
+  @Watch("count")
+  public countChange(){
+    if(this.count === 5){
+      alert("zyourenn")
+    }
+  }
+}
 </script>
 
 <style lang="scss">
